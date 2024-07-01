@@ -9,30 +9,31 @@ import {
   VpxProfile
 } from "../common/enums";
 
-const validateDirty = (codecInfo:DirtyCodecInfo): void => {
-  const limitations: Record<VpxProfile, { bitDepth: VpxBitDepth[], chromaSubsampling: VpxChromaSubsampling[] }> = {
-    [VpxProfile.PROFILE_0]: {
-      bitDepth: [VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.UNSET],
-      chromaSubsampling: [VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.UNSET]
-    },
-    [VpxProfile.PROFILE_1]: {
-      bitDepth: [VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.UNSET],
-      chromaSubsampling: [VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444, VpxChromaSubsampling.UNSET]
-    },
-    [VpxProfile.PROFILE_2]: {
-      bitDepth: [VpxBitDepth.BIT_DEPTH_10, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.UNSET],
-      chromaSubsampling: [VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.UNSET]
-    },
-    [VpxProfile.PROFILE_3]: {
-      bitDepth: [VpxBitDepth.BIT_DEPTH_10, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.UNSET],
-      chromaSubsampling: [VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444, VpxChromaSubsampling.UNSET]
-    },
-    [VpxProfile.UNSET]: {
-      bitDepth: [VpxBitDepth.UNSET, VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.BIT_DEPTH_10],
-      chromaSubsampling: [VpxChromaSubsampling.UNSET, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444]
-    }
+const profileLimitations: Record<VpxProfile, { bitDepth: VpxBitDepth[], chromaSubsampling: VpxChromaSubsampling[] }> = {
+  [VpxProfile.PROFILE_0]: {
+    bitDepth: [VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.UNSET],
+    chromaSubsampling: [VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.UNSET]
+  },
+  [VpxProfile.PROFILE_1]: {
+    bitDepth: [VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.UNSET],
+    chromaSubsampling: [VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444, VpxChromaSubsampling.UNSET]
+  },
+  [VpxProfile.PROFILE_2]: {
+    bitDepth: [VpxBitDepth.BIT_DEPTH_10, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.UNSET],
+    chromaSubsampling: [VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.UNSET]
+  },
+  [VpxProfile.PROFILE_3]: {
+    bitDepth: [VpxBitDepth.BIT_DEPTH_10, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.UNSET],
+    chromaSubsampling: [VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444, VpxChromaSubsampling.UNSET]
+  },
+  [VpxProfile.UNSET]: {
+    bitDepth: [VpxBitDepth.UNSET, VpxBitDepth.BIT_DEPTH_8, VpxBitDepth.BIT_DEPTH_12, VpxBitDepth.BIT_DEPTH_10],
+    chromaSubsampling: [VpxChromaSubsampling.UNSET, VpxChromaSubsampling.CS_420_VERTICAL, VpxChromaSubsampling.CS_420_COLOCATED_0_0, VpxChromaSubsampling.CS_422, VpxChromaSubsampling.CS_444]
   }
-  const profileLimits = limitations[codecInfo.profile];
+}
+
+const validateDirty = (codecInfo:DirtyCodecInfo): void => {
+  const profileLimits = profileLimitations[codecInfo.profile];
   if (!profileLimits.bitDepth.includes(codecInfo.bitDepth)) {
     throw new Error(`Profile ${codecInfo.profile} is not compatible with bit depth ${codecInfo.bitDepth}`);
   }
@@ -42,7 +43,7 @@ const validateDirty = (codecInfo:DirtyCodecInfo): void => {
 }
 
 const parseDirty = (codecString: string): DirtyCodecInfo => {
-  const box = codecString[0].split('.');
+  const box = codecString.split('.');
   if((box.length >1 && box.length <4) || box.length > 9) throw new Error('Invalid codec string');
 
   const dirtyDescription = {
