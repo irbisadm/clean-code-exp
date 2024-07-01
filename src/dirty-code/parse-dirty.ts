@@ -32,7 +32,7 @@ const profileLimitations: Record<VpxProfile, { bitDepth: VpxBitDepth[], chromaSu
   }
 }
 
-const validateDirty = (codecInfo:DirtyCodecInfo): void => {
+function validateDirty (codecInfo:DirtyCodecInfo): void {
   const profileLimits = profileLimitations[codecInfo.profile];
   if (!profileLimits.bitDepth.includes(codecInfo.bitDepth)) {
     throw new Error(`Profile ${codecInfo.profile} is not compatible with bit depth ${codecInfo.bitDepth}`);
@@ -42,14 +42,14 @@ const validateDirty = (codecInfo:DirtyCodecInfo): void => {
   }
 }
 
-const parseDirty = (codecString: string): DirtyCodecInfo => {
+function parseDirty (codecString: string): DirtyCodecInfo {
   const box = codecString.split('.');
   if((box.length >1 && box.length <4) || box.length > 9) throw new Error('Invalid codec string');
 
   const dirtyDescription = {
     codecName: box[0],
     profile: box[1] ? parseInt(box[1]) : VpxProfile.PROFILE_0,
-    level: box[2] ? parseInt(box[2]).toString() as VpxLevel : VpxLevel.UNDEFINED,
+    level: box[2] ? box[2] as VpxLevel : VpxLevel.UNDEFINED,
     bitDepth: box[3] ? parseInt(box[3]) as VpxBitDepth : VpxBitDepth.BIT_DEPTH_8,
     chromaSubsampling : box[4] ? parseInt(box[4]) as VpxChromaSubsampling : VpxChromaSubsampling.CS_420_COLOCATED_0_0,
     colourPrimaries : box[5] ? parseInt(box[5]) as ColourPrimaries : ColourPrimaries.BT_709,
